@@ -22,7 +22,7 @@ $ git clone https://github.com/kvu787/httpVirt.git
 
 ```bash
 $ cd httpVirt
-$ vagrant up
+$ vagrant up # starts server on http://127.0.0.1:10411
 ```
 
 ## Run a command
@@ -32,9 +32,9 @@ $ vagrant up
 Use cURL with the HTTP API:
 
 ```bash
-$ curl 'http://localhost:10411/create'
+$ curl 'http://127.0.0.1:10411/create'
 8ebc3265a715ab0854fcb74c8305911e74c740471fa50f3a1b99949de43a9c0a
-$ curl 'http://localhost:10411/shell/8ebc3265a715ab0854fcb74c8305911e74c740471fa50f3a1b99949de43a9c0a?command=ls%20-a'
+$ curl 'http://127.0.0.1:10411/shell/8ebc3265a715ab0854fcb74c8305911e74c740471fa50f3a1b99949de43a9c0a?command=ls%20-a'
 .  ..  .bashrc  .profile
 ```
 
@@ -42,7 +42,7 @@ $ curl 'http://localhost:10411/shell/8ebc3265a715ab0854fcb74c8305911e74c740471fa
 
 Use client-side Javascript with the WebSocket API:
 
-1. Visit http://localhost:10411 in your browser.
+1. Visit http://127.0.0.1:10411 in your browser.
 2. Open the JavaScript console.
 3. Copy/paste and run the following code:
 
@@ -60,9 +60,9 @@ function httpGetAsync(theUrl, callback) {
 }
 
 // create a VM
-httpGetAsync('http://localhost:10411/create', function (containerID) {
+httpGetAsync('http://127.0.0.1:10411/create', function (containerID) {
   // open a WebSocket to the VM
-  var webSocket = new WebSocket(`ws://localhost:10411/session/${containerID}`);
+  var webSocket = new WebSocket(`ws://127.0.0.1:10411/session/${containerID}`);
 
   // handler called for each incoming message
   webSocket.onmessage = function(e){
