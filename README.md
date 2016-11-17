@@ -32,9 +32,9 @@ $ vagrant up # starts server on http://127.0.0.1:10411
 Use cURL with the HTTP API:
 
 ```bash
-$ curl 'http://127.0.0.1:10411/create'
+$ curl -w '\n' 'http://127.0.0.1:10411/create'
 8ebc3265a715ab0854fcb74c8305911e74c740471fa50f3a1b99949de43a9c0a
-$ curl 'http://127.0.0.1:10411/shell/8ebc3265a715ab0854fcb74c8305911e74c740471fa50f3a1b99949de43a9c0a?command=ls%20-a'
+$ curl 'http://127.0.0.1:10411/command/8ebc3265a715ab0854fcb74c8305911e74c740471fa50f3a1b99949de43a9c0a?command=ls%20-a'
 .  ..  .bashrc  .profile
 ```
 
