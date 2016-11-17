@@ -70,11 +70,13 @@ httpGetAsync('http://127.0.0.1:10411/create', function (containerID) {
      console.log('Message received: ' + message);
   }
 
-  // send command as outgoing message
   webSocket.onopen = function () {
+    // when websocket is ready, send command as outgoing message
     webSocket.send('ls -a');
   }
 
   // onmessage handler will print output
 });
 ```
+
+4. You should see `Message received: <command output>` in the console.
