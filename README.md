@@ -4,14 +4,14 @@ httpVirt is a tool for creating virtual machines and using them through a HTTP a
 
 You can
 
-* deploy httpVirt to a physical machine
-* create resource-constrained VMs using physical machine resources
-* send shell commands to these VMs via HTTP and WebSocket requests
+* Deploy httpVirt to a physical machine
+* Create resource-constrained VMs using physical machine resources
+* Send shell commands to these VMs via HTTP and WebSocket requests
 
 ## Installation
 
-1. Install VirtualBox.
-2. Install Vagrant
+1. Install [VirtualBox](https://www.virtualbox.org/wiki/Downloads).
+2. Install [Vagrant 1.8.6](https://releases.hashicorp.com/vagrant/1.8.6/).
 3. Download the repo and run the httpVirt server:
 
 ```bash
