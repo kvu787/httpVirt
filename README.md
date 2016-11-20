@@ -22,19 +22,22 @@ $ git clone https://github.com/kvu787/httpVirt.git
 
 ```bash
 $ cd httpVirt
-$ vagrant up # starts server on http://127.0.0.1:10411
+$ vagrant up
 ```
 
-## Run a command
+The latter command starts a server on http://127.0.0.1:10411 .
+It takes a long time to run.
+
+## Create a VM and run a command
 
 ### With an HTTP GET
 
 Use cURL with the HTTP API:
 
 ```bash
-$ curl -w '\n' 'http://127.0.0.1:10411/create'
+$ id=`curl -w '\n' 'http://127.0.0.1:10411/create'`
 8ebc3265a715ab0854fcb74c8305911e74c740471fa50f3a1b99949de43a9c0a
-$ curl 'http://127.0.0.1:10411/command/8ebc3265a715ab0854fcb74c8305911e74c740471fa50f3a1b99949de43a9c0a?command=ls%20-a'
+$ curl "http://127.0.0.1:10411/command/$id?command=ls%20-a"
 .  ..  .bashrc  .profile
 ```
 
