@@ -90,3 +90,7 @@ httpGetAsync('http://127.0.0.1:10411/create', function (containerID) {
 $ cd httpVirt
 $ vagrant destroy -f
 ```
+
+## Run the xterm demo
+
+Make sure httpVirt is running and open `demo/index.html` in your web browser.

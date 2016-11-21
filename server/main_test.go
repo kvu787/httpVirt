@@ -11,7 +11,7 @@ import (
 )
 
 func init() {
-	go StartServer(8000)
+	go StartServer(8000, false)
 	time.Sleep(time.Second)
 }
 
@@ -85,8 +85,8 @@ func TestSession(t *testing.T) {
 	runCommand("stty -echo", connection, t) // disable input echo
 	time.Sleep(time.Second)                 // TODO(kvu787): delay for stty -echo to take effect, why?
 
-	commands := []string{"echo hello world", "badcommand", "cat > hello.txt"}
-	wantedOutput := []string{"hello world", "bash: badcommand: command not found", ""}
+	commands := []string{"echo hello world", "badcommand"}
+	wantedOutput := []string{"hello world", "bash: badcommand: command not found"}
 	for i, command := range commands {
 		got := runCommand(command, connection, t)
 		want := wantedOutput[i]

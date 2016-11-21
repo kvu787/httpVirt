@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"os"
 	"os/exec"
 	"strconv"
 	"strings"
@@ -13,6 +14,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
+	"github.com/rs/cors"
 )
 
 var id2port = map[string]int{}
@@ -21,10 +23,11 @@ var upgrader = websocket.Upgrader{
 }
 
 func main() {
-	StartServer(10411)
+	useCors := len(os.Args) >= 2 && os.Args[1] == "cors"
+	StartServer(10411, useCors)
 }
 
-func StartServer(port int) {
+func StartServer(port int, useCors bool) {
 	log.SetFlags(log.LstdFlags | log.Llongfile)
 
 	// Setup routing
@@ -32,10 +35,18 @@ func StartServer(port int) {
 	r.HandleFunc("/create", CreateHandler).Methods("GET")
 	r.HandleFunc("/command/{containerID}", ShellCommandHandler)
 	r.HandleFunc("/session/{containerID}", ShellSessionHandler)
+	r.HandleFunc("/xterm/{containerID}", ShellXtermHandler)
+
+	// wrap router in cors handler
+	// let other domains ping our service to make debugging easier
+	var handler http.Handler = r
+	if useCors {
+		handler = cors.Default().Handler(r)
+	}
 
 	// Start server
 	log.Printf("Starting server on port %d...\n", port)
-	log.Println(http.ListenAndServe(fmt.Sprintf(":%d", port), r))
+	log.Println(http.ListenAndServe(fmt.Sprintf(":%d", port), handler))
 }
 
 func CreateHandler(w http.ResponseWriter, r *http.Request) {
@@ -114,6 +125,28 @@ func ShellSessionHandler(response http.ResponseWriter, request *http.Request) {
 	port := id2port[containerID]
 
 	url := url.URL{Scheme: "ws", Host: fmt.Sprintf("127.0.0.1:%d", port), Path: "/session"}
+	containerConnection, _, err := websocket.DefaultDialer.Dial(url.String(), nil)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	userConnection, err := upgrader.Upgrade(response, request, nil)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	// ws -> shell
+	go forward(containerConnection, userConnection)
+	go forward(userConnection, containerConnection)
+}
+
+func ShellXtermHandler(response http.ResponseWriter, request *http.Request) {
+	containerID := mux.Vars(request)["containerID"]
+	port := id2port[containerID]
+
+	url := url.URL{Scheme: "ws", Host: fmt.Sprintf("127.0.0.1:%d", port), Path: "/xterm"}
 	containerConnection, _, err := websocket.DefaultDialer.Dial(url.String(), nil)
 	if err != nil {
 		log.Println(err)

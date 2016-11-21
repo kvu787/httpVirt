@@ -29,7 +29,8 @@ func main() {
 func StartServer(port int) {
 	r := mux.NewRouter()
 	r.HandleFunc("/command", ShellCommandHandler)
-	r.HandleFunc("/session", ShellSessionHandler)
+	r.HandleFunc("/session", SessionHandler)
+	r.HandleFunc("/xterm", XtermHandler)
 	log.Printf("Starting server on port %d...\n", port)
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", port), r))
 	time.Sleep(time.Second)
@@ -52,7 +53,7 @@ func ShellCommandHandler(response http.ResponseWriter, request *http.Request) {
 	}
 }
 
-func ShellSessionHandler(response http.ResponseWriter, request *http.Request) {
+func XtermHandler(response http.ResponseWriter, request *http.Request) {
 	file, err := pty.Start(exec.Command(sessionShell[0], sessionShell[1:]...))
 	if err != nil {
 		log.Fatal(err)
@@ -78,7 +79,58 @@ func ShellSessionHandler(response http.ResponseWriter, request *http.Request) {
 				log.Println(err)
 				break
 			}
-			io.Copy(file, bytes.NewReader(append(data, '\n')))
+				io.Copy(file, bytes.NewReader(data))
+		}
+	}()
+
+	// shell -> ws
+	go func() {
+		reader := bufio.NewReader(file)
+		for {
+			b, err := reader.ReadByte()
+			if err != nil {
+				if err == io.EOF {
+					break
+				} else {
+					log.Fatal(err)
+				}
+			}
+			err = conn.WriteMessage(websocket.TextMessage, []byte{b})
+			if err != nil {
+				log.Println(err)
+				break
+			}
+		}
+	}()
+}
+
+func SessionHandler(response http.ResponseWriter, request *http.Request)  {
+	file, err := pty.Start(exec.Command(sessionShell[0], sessionShell[1:]...))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	conn, err := upgrader.Upgrade(response, request, nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// wait for terminal session to start
+	// TODO(kvu787): find a better way
+	time.Sleep(250 * time.Millisecond)
+
+	// ws -> shell
+	go func() {
+		for {
+			messageType, data, err := conn.ReadMessage()
+			if messageType != websocket.TextMessage {
+				log.Fatal("websocket: messageType != TextMessage")
+			}
+			if err != nil {
+				log.Println(err)
+				break
+			}
+				io.Copy(file, bytes.NewReader(append(data, '\n')))
 		}
 	}()
 
@@ -99,5 +151,4 @@ func ShellSessionHandler(response http.ResponseWriter, request *http.Request) {
 			return
 		}
 	}()
-
 }

@@ -39,7 +39,7 @@ sudo apt-get install -y git
 cd $GOPATH/src/github.com/kvu787/httpVirt/server
 go get -d
 go build
-sudo ./server >~/log.txt 2>&1 &
+sudo ./server cors >~/log.txt 2>&1 &
 
 # wait for server to spin up
 sleep 3
