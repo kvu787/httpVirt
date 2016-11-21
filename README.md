@@ -83,3 +83,10 @@ httpGetAsync('http://127.0.0.1:10411/create', function (containerID) {
 ```
 
 4. You should see `Message received: <command output>` in the console.
+
+## Shutdown httpVirt and clean up associated resources
+
+```bash
+$ cd httpVirt
+$ vagrant destroy -f
+```
