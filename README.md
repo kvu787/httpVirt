@@ -11,7 +11,7 @@ You can
 ## Installation
 
 1. Install [VirtualBox](https://www.virtualbox.org/wiki/Downloads).
-2. Install [Vagrant 1.8.6](https://releases.hashicorp.com/vagrant/1.8.6/).
+2. Install [Vagrant 1.8.6](https://releases.hashicorp.com/vagrant/1.8.6) or [1.8.5](https://releases.hashicorp.com/vagrant/1.8.5).
 3. Download the repo and run the httpVirt server:
 
 ```bash
