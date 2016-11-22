@@ -94,3 +94,8 @@ $ vagrant destroy -f
 ## Run the xterm demo
 
 Make sure httpVirt is running and open `demo/index.html` in your web browser.
+
+## Updating httpVirt
+
+When you make or pull new changes, destroy the currently running httpVirt
+VM with `vagrant destroy -f` and restart it with `vagrant up`.
